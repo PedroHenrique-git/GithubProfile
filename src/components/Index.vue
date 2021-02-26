@@ -5,11 +5,15 @@
             <button class="btn-send">search profile</button>
         </form>
     </section>
-    <ul>
-        <li v-for="value in userData" v-bind:key="value">
-            {{ value ? value : 'not exists' }}
-        </li>
-    </ul>
+    <div v-if="isLoading" class="profile-card">
+        <img :src="userData.avatar_url || require('../assets/images/user.png')"
+        />
+        <div class="user-informations">
+            <h3>{{ userData.login ? userData.login : "not found" }}</h3>
+            <p>total repositories: {{ userData.public_repos ? userData.public_repos : 0}}</p>
+            <p>company: {{ userData.company ? userData.company : "none" }}</p>
+        </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -21,6 +25,7 @@ export default defineComponent({
     return {
       user: '',
       userData: {},
+      isLoading: false,
     };
   },
   props: {
@@ -31,65 +36,13 @@ export default defineComponent({
       if (this.user === '') return;
       const data = await (await fetch(`https://api.github.com/users/${this.user}`)).json();
       this.userData = data;
+      this.user = '';
+      this.isLoading = true;
     },
   },
 });
 </script>
 
 <style scoped>
-    .container {
-        margin: 50px 0;
-
-        display: flex;
-        justify-content: center;
-    }
-
-    .form-box {
-        width: 300px;
-        height: auto;
-
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-box input {
-        background: transparent;
-        border: 1px solid white;
-        border-radius: 5px;
-        margin-bottom: 15px;
-        height: 50px;
-        outline: none;
-        padding: .3em;
-        font-size: 18px;
-        color: #fff;
-    }
-
-    .form-box input:focus {
-        background: transparent;
-    }
-
-    .form-box button {
-        background: rgb(39, 39, 39);
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        height: 50px;
-        outline: none;
-        padding: .3em;
-        font-size: 18px;
-        color: #fff;
-    }
-
-    ul {
-        width: 500px;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: center;
-        margin: 20px auto;
-    }
-
-    ul li {
-        white-space: nowrap;
-    }
+    @import url(../assets/css/index.css);
 </style>
